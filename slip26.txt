@@ -1,0 +1,106 @@
+Q1. Create KNN model on Indian diabetes patient’s database and predict whether a new
+patient is diabetic (1) or not (0). Find optimal value of K.
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, accuracy_score,
+confusion_matrix
+import matplotlib.pyplot as plt
+# Load the dataset
+# Replace 'diabetes_data.csv' with the correct path to your dataset
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-
+indians-diabetes.data.csv"
+column_names = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness',
+'Insulin',
+'BMI', 'DiabetesPedigreeFunction', 'Age', 'Outcome']
+data = pd.read_csv(url, header=None, names=column_names)
+data.head()
+# Splitting the dataset into features and target
+X = data.iloc[:, :-1] # Features
+y = data.iloc[:, -1]
+# Target variable (1 for diabetic, 0 for non-
+diabetic)
+# Split dataset into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
+random_state=42)
+# Feature Scaling (Standardization)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+# Finding the optimal value for K using cross-validation
+k_values = range(1, 21)
+accuracies = []
+for k in k_values:
+knn = KNeighborsClassifier(n_neighbors=k)
+knn.fit(X_train, y_train)
+y_pred = knn.predict(X_test)
+accuracies.append(accuracy_score(y_test, y_pred))
+# Plotting K vs accuracy
+plt.figure(figsize=(12, 6))
+plt.plot(k_values, accuracies, marker='o')
+plt.title('K vs Accuracy')
+plt.xlabel('Number of Neighbors K')
+plt.ylabel('Accuracy')
+plt.xticks(k_values)
+plt.grid()
+plt.show()
+# Finding the optimal K
+optimal_k = k_values[np.argmax(accuracies)]
+print(f'Optimal value of K: {optimal_k}')
+# Building and evaluating the final model with the optimal K
+knn_optimal = KNeighborsClassifier(n_neighbors=optimal_k)
+knn_optimal.fit(X_train, y_train)
+y_pred_optimal = knn_optimal.predict(X_test)
+# Evaluation
+print("Accuracy:", accuracy_score(y_test, y_pred_optimal))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_optimal))
+print("Classification Report:\n", classification_report(y_test,
+y_pred_optimal))
+# Predicting for a new patient
+# Replace with actual values for a new patient: [Pregnancies, Glucose,
+BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]
+new_patient = [[3, 85, 66, 29, 0, 26.6, 0.351, 31]]
+new_patient_scaled = scaler.transform(new_patient)
+prediction = knn_optimal.predict(new_patient_scaled)
+print('Predicted Diabetes Status for the new patient:', 'Diabetic' if
+prediction[0] == 1 else 'Not Diabetic')
+
+Q.2. Use Apriori algorithm on groceries dataset to find which items are brought together.
+Use minimum support =0.25
+Ans
+#Command for installation
+pip install mlxtend
+import pandas as pd
+# Sample transactional data
+data = {
+'Transaction': [1, 1, 1, 2, 2, 3, 3, 3, 4, 4],
+'Item': ['Milk', 'Bread', 'Diaper',
+'Eggs', 'Milk',
+'Bread', 'Diaper', 'Coffee',
+'Bread', 'Diaper']
+}
+# Creating a DataFrame
+df = pd.DataFrame(data)
+# Create a basket of items for each transaction
+basket = (df.groupby(['Transaction', 'Item'])['Item']
+.count().unstack().reset_index().fillna(0)
+.set_index('Transaction'))
+# Convert counts to 1s and 0s for the presence of that item in a
+transaction
+basket = basket.applymap(lambda x: 1 if x > 0 else 0)
+print(basket)
+from mlxtend.frequent_patterns import apriori, association_rules
+# Applying the Apriori algorithm
+frequent_itemsets = apriori(basket, min_support=0.25, use_colnames=True)
+# Displaying frequent itemsets
+print("Frequent Itemsets:")
+print(frequent_itemsets)
+# Generating association rules
+rules = association_rules(frequent_itemsets, metric="lift",
+min_threshold=1)
+# Displaying the rules
+print("\nAssociation Rules:")
+print(rules)
