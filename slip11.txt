@@ -50,3 +50,56 @@ plt.xlabel('Feature: (First feature in dataset)')
 plt.ylabel('House Price')
 plt.legend()
 plt.show()
+
+Q.2. Write a python program to Implement Decision Tree classifier model on Data which
+is extracted from images that were taken from genuine and forged banknote-like
+specimens.
+Ans:
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report,
+confusion_matrix
+import numpy as np
+# Load the dataset
+data = pd.read_csv("C:/Users/PC
+04/Downloads/data_banknote_authentication.txt")
+# Assign column names (these names should correspond to the dataset's
+attributes)
+data.columns = ['Variance', 'Skewness', 'Curtosis', 'Entropy', 'Class']
+# Display the first few rows of the dataset
+print("Dataset Preview:")
+print(data.head())
+# Assign column names (these names should correspond to the dataset's
+attributes)
+data.columns = ['Variance', 'Skewness', 'Curtosis', 'Entropy', 'Class']
+# Display the first few rows of the dataset
+print("Dataset Preview:")
+print(data.head())
+# Split the dataset into features and labels
+X = data[['Variance', 'Skewness', 'Curtosis', 'Entropy']]
+y = data['Class'] # Labels
+# Features
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
+random_state=42)
+# Create the Decision Tree classifier
+dt_classifier = DecisionTreeClassifier()
+# Fit the model on the training data
+dt_classifier.fit(X_train, y_train)
+# Make predictions on the test data
+y_pred = dt_classifier.predict(X_test)
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred)
+# Display the evaluation metrics
+print(f"Accuracy: {accuracy:.2f}")
+print("Confusion Matrix:")
+print(conf_matrix)
+print("Classification Report:")
+print(class_report)
+# Optional: Save the model if needed for future use
+import joblib
+joblib.dump(dt_classifier, 'decision_tree_model.joblib')
+print("Decision Tree model saved as 'decision_tree_model.joblib'")
