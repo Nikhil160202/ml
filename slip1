@@ -1,0 +1,69 @@
+1. Use Apriori algorithm on groceries dataset to find which items are brought together.
+Use minimum support =0.25.
+Ans:
+#Command for installation
+pip install mlxtend
+
+import pandas as pd
+# Sample transactional data
+data = {
+'Transaction': [1, 1, 1, 2, 2, 3, 3, 3, 4, 4],
+'Item': ['Milk', 'Bread', 'Diaper',
+'Eggs', 'Milk',
+'Bread', 'Diaper', 'Coffee',
+'Bread', 'Diaper']
+}
+# Creating a DataFrame
+df = pd.DataFrame(data)
+# Create a basket of items for each transaction
+basket = (df.groupby(['Transaction', 'Item'])['Item']
+.count().unstack().reset_index().fillna(0)
+.set_index('Transaction'))
+# Convert counts to 1s and 0s for the presence of that item in a
+transaction
+basket = basket.applymap(lambda x: 1 if x > 0 else 0)
+print(basket)
+from mlxtend.frequent_patterns import apriori, association_rules
+# Applying the Apriori algorithm
+frequent_itemsets = apriori(basket, min_support=0.25, use_colnames=True)
+# Displaying frequent itemsets
+print("Frequent Itemsets:")
+print(frequent_itemsets)
+# Generating association rules
+rules = association_rules(frequent_itemsets, metric="lift",
+min_threshold=1)
+# Displaying the rules
+print("\nAssociation Rules:")
+print(rules)
+
+2. Write a Python program to prepare Scatter Plot for Iris Dataset. Convert Categorical
+values in numeric format for a dataset.
+Ans:
+# Import necessary libraries
+import pandas as pd
+
+# Loading dataset from CSV file
+dataset = pd.read_csv('C:\\Users\\Admin\\Desktop\\iris.csv')
+
+# Converting 'variety' column to category type
+dataset["variety"] = dataset["variety"].astype('category')
+
+# Displaying data types
+print("******* Data types of fields in iris.csv ******")
+print(dataset.dtypes)
+
+# Displaying 'variety' column with categorical data
+print(dataset["variety"])
+
+# Assigning encoded variable to a new column using cat.codes
+print("***** Adding new column ******")
+dataset['variety_num'] = dataset['variety'].cat.codes
+
+# Display updated data types to show the new 'variety_num' column
+print(dataset.dtypes)
+print("\n_______________________________________________________\n")
+
+# To view the full dataset, set display options
+pd.set_option('display.max_rows', 150)
+pd.set_option('display.max_columns', 7)
+print(dataset)
