@@ -1,0 +1,95 @@
+Q.1. Fit the simple linear regression and polynomial linear regression models to
+Salary_positions.csv data. Find which one is more accurately fitting to the given
+data. Also predict the salaries of level 11 and level 12 employees.
+Ans
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import matplotlib.pyplot as plt
+import os
+df=pd.read_csv("C:/Users/PC 04/Downloads/Position_Salaries.csv")
+df.head()
+# Following plot the relationship between Level and Salary
+plt.figure(figsize=(15, 10))
+plt.scatter(x=df["Level"], y=df["Salary"])
+plt.xlabel("Level");
+plt.ylabel("Salary")
+X = df.iloc[:, 1:2].values
+y = df.iloc[:, -1:].values
+X
+from sklearn.linear_model import LinearRegression
+# linear regression model
+lr_normal = LinearRegression()
+lr_normal.fit(X, y)
+# import Polynomial Features
+from sklearn.preprocessing import PolynomialFeatures
+lr_poly = LinearRegression()
+poly_reg = PolynomialFeatures(degree = 2)
+X_poly = poly_reg.fit_transform(X)
+X_poly
+lr_poly.fit(X_poly, y)
+# Visualising the Linear Regression results
+plt.figure(figsize=(15, 10))
+plt.scatter(X, y, color = 'red')
+plt.plot(X, lr_normal.predict(X), color = 'blue')
+plt.title('Truth or Bluff (Linear Regression)')
+plt.xlabel('Position level')
+plt.ylabel('Salary')
+plt.show()
+# Visualising the Polynomial Regression results
+plt.figure(figsize=(15, 10))
+plt.scatter(X, y, color = 'red')
+plt.plot(X, lr_poly.predict(poly_reg.fit_transform(X)), color = 'blue')
+plt.title('Position Level Vs Salary (Polynomial Regression-Degree 2)')
+plt.xlabel('Position level')
+plt.ylabel('Salary')
+plt.show()
+# polynomial regression model
+lr_poly = LinearRegression()
+poly_reg = PolynomialFeatures(degree = 3) # change form 2 to 3
+X_poly = poly_reg.fit_transform(X)
+lr_poly.fit(X_poly, y)
+# Visualising the Polynomial Regression results
+plt.figure(figsize=(15, 10))
+plt.scatter(X, y, color = 'red')
+plt.plot(X, lr_poly.predict(poly_reg.fit_transform(X)), color = 'blue')
+plt.title('Position Level Vs Salary (Polynomial Regression- Degree 3)')
+plt.xlabel('Position level')
+plt.ylabel('Salary')
+plt.show()
+# polynomial regression model
+lr_poly = LinearRegression()
+poly_reg = PolynomialFeatures(degree = 4) # change form
+X_poly = poly_reg.fit_transform(X)
+lr_poly.fit(X_poly, y)
+# Visualising the Polynomial Regression results
+plt.figure(figsize=(15, 10))
+plt.scatter(X, y, color = 'red')
+plt.plot(X, lr_poly.predict(poly_reg.fit_transform(X)), color = 'blue')
+plt.title('Position Level Vs Salary (Polynomial Regression-Degree 4)')
+plt.xlabel('Position level')
+plt.ylabel('Salary')
+plt.show()
+# Now lets predict some values
+lr_normal.predict([[8.5]]) # As per our linear regresion model salary.of
+8.5 level should be 492136.
+lr_poly.predict(poly_reg.fit_transform([[8.5]]))
+
+Q.2. Write a python program to find all null values from a dataset and remove them.
+Ans
+import pandas as pd
+# Sample dataset (replace with your actual dataset)
+data = {
+    'Name': ['John', 'Alice', 'Bob', None, 'Eve'],
+    'Age': [23, 30, None, 25, 22],
+    'City': ['New York', None, 'Chicago', 'Los Angeles', 'Miami']
+}
+# Create a DataFrame
+df = pd.DataFrame(data)
+# Display the original dataset
+print("Original Dataset:")
+print(df)
+# Find and remove rows with null values
+df_cleaned = df.dropna()
+# Display the dataset after removing null values
+print("\nDataset after removing null values:")
+print(df_cleaned)
