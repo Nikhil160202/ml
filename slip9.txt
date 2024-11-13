@@ -1,0 +1,113 @@
+Q1.Implement Ridge Regression, Lasso regression, ElasticNet model using SPPU M.Sc. Computer Science Part-II Syllabus 2024-25 17 boston_houses.csv and take only ‘RM’ and ‘Price’ of the houses. divide the data as training and testing data. Fit line using Ridge regression and
+to find price of a house if it contains 5 rooms. and compare results.
+Ans.
+# import libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+# Suppress Warnings for clean notebook
+import warnings
+warnings.filterwarnings('ignore')
+# read dataset
+dataset = pd.read_csv('./Melbourne_housing_FULL.csv')
+dataset.head()
+dataset.nunique()
+# let's use limited columns which makes more sense for serving our purpose
+cols_to_use = ['Suburb', 'Rooms', 'Type', 'Method', 'SellerG',
+'Regionname', 'Propertycount',
+'Distance', 'CouncilArea', 'Bedroom2', 'Bathroom', 'Car',
+'Landsize', 'BuildingArea', 'Price']
+dataset = dataset[cols_to_use]
+dataset.head()
+dataset.shape
+dataset.isna().sum()
+# like 0 for Car feature will mean that there's no car parking feature with
+house
+cols_to_fill_zero = ['Propertycount', 'Distance', 'Bedroom2', 'Bathroom',
+'Car']
+dataset[cols_to_fill_zero] = dataset[cols_to_fill_zero].fillna(0)
+# other continuous features can be imputed with mean for faster results
+since our focus is on Reducing overfitting
+# using Lasso and Ridge Regression
+dataset['Landsize'] = dataset['Landsize'].fillna(dataset.Landsize.mean())
+dataset['BuildingArea'] =
+dataset['BuildingArea'].fillna(dataset.BuildingArea.mean())
+dataset.dropna(inplace=True)
+dataset.shape
+dataset = pd.get_dummies(dataset, drop_first=True)
+dataset.head()
+X = dataset.drop('Price', axis=1)
+y = dataset['Price']
+from sklearn.model_selection import train_test_split
+train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.3,
+random_state=2)
+from sklearn.linear_model import LinearRegression
+reg = LinearRegression().fit(train_X, train_y)
+reg.score(test_X, test_y)
+reg.score(train_X, train_y)
+from sklearn import linear_model
+lasso_reg = linear_model.Lasso(alpha=50, max_iter=100, tol=0.1)
+lasso_reg.fit(train_X, train_y)
+lasso_reg.score(test_X, test_y)
+lasso_reg.score(train_X, train_y)
+from sklearn.linear_model import Ridge
+ridge_reg= Ridge(alpha=50, max_iter=100, tol=0.1)
+ridge_reg.fit(train_X, train_y)
+ridge_reg.score(test_X, test_y)
+ridge_reg.score(train_X, train_y)
+
+Q2.Write a python program to implement Linear SVM using UniversalBank.csv
+Ans:
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.preprocessing import StandardScaler
+# Step 1: Load the dataset
+# Replace 'UniversalBank.csv' with the actual path of your CSV file
+df = pd.read_csv('UniversalBank.csv')
+# Step 2: Preview the dataset
+print("\nDataset Preview:")
+print(df.head())
+# Step 3: Preprocess the data
+# Handle missing values (if any)
+print("\nChecking for missing values...")
+print(df.isnull().sum())
+# If any missing values exist, handle them accordingly (drop or fill)
+df = df.dropna()  # Dropping rows with missing values (alternatively, use fillna())
+# Step 4: Encode categorical variables (if any)
+# For example, if the 'Personal Loan' column is categorical, encode it
+# Assuming 'Personal Loan' is the target variable and needs to be encoded (if it's categorical)
+df['Personal Loan'] = df['Personal Loan'].astype('category')
+# Step 5: Select the features (X) and target variable (y)
+# Assuming 'Personal Loan' is the target variable, and all others are features
+X = df.drop('Personal Loan', axis=1)  # Features (independent variables)
+y = df['Personal Loan']  # Target variable (dependent variable)
+# Step 6: Split the dataset into training and testing sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Step 7: Scale the features (important for SVM)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+# Step 8: Initialize the Linear SVM model
+svm_model = SVC(kernel='linear', random_state=42)
+# Step 9: Train the model
+svm_model.fit(X_train_scaled, y_train)
+# Step 10: Make predictions on the test set
+y_pred = svm_model.predict(X_test_scaled)
+# Step 11: Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred)
+# Step 12: Print the results
+print(f"\nAccuracy: {accuracy}")
+print("\nConfusion Matrix:")
+print(conf_matrix)
+print("\nClassification Report:")
+print(class_report)
+# Displaying actual vs predicted values
+print("\nActual vs Predicted values:")
+for i in range(len(y_test)):
+    print(f"Actual: {y_test.iloc[i]}, Predicted: {y_pred[i]}")
