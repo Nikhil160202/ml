@@ -1,0 +1,114 @@
+Q.1. Implement Ridge Regression, Lasso regression model using boston_houses.csv and
+take only ‘RM’ and ‘Price’ of the houses. divide the data as training and testing
+data. Fit line using Ridge regression and to find price of a house if it contains 5
+rooms. and compare results.
+Ans: 
+# import libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+# Suppress Warnings for clean notebook
+import warnings
+warnings.filterwarnings('ignore')
+# read dataset
+dataset = pd.read_csv('./Melbourne_housing_FULL.csv')
+dataset.head()
+dataset.nunique()
+# let's use limited columns which makes more sense for serving our purpose
+cols_to_use = ['Suburb', 'Rooms', 'Type', 'Method', 'SellerG',
+'Regionname', 'Propertycount',
+'Distance', 'CouncilArea', 'Bedroom2', 'Bathroom', 'Car',
+'Landsize', 'BuildingArea', 'Price']
+dataset = dataset[cols_to_use]
+dataset.head()
+dataset.shape
+dataset.isna().sum()
+# like 0 for Car feature will mean that there's no car parking feature with
+house
+cols_to_fill_zero = ['Propertycount', 'Distance', 'Bedroom2', 'Bathroom',
+'Car']
+dataset[cols_to_fill_zero] = dataset[cols_to_fill_zero].fillna(0)
+# other continuous features can be imputed with mean for faster results
+since our focus is on Reducing overfitting
+# using Lasso and Ridge Regression
+dataset['Landsize'] = dataset['Landsize'].fillna(dataset.Landsize.mean())
+dataset['BuildingArea'] =
+dataset['BuildingArea'].fillna(dataset.BuildingArea.mean())
+dataset.dropna(inplace=True)
+dataset.shape
+dataset = pd.get_dummies(dataset, drop_first=True)
+dataset.head()
+X = dataset.drop('Price', axis=1)
+y = dataset['Price']
+from sklearn.model_selection import train_test_split
+train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.3,
+random_state=2)
+from sklearn.linear_model import LinearRegression
+reg = LinearRegression().fit(train_X, train_y)
+reg.score(test_X, test_y)
+reg.score(train_X, train_y)
+from sklearn import linear_model
+lasso_reg = linear_model.Lasso(alpha=50, max_iter=100, tol=0.1)
+lasso_reg.fit(train_X, train_y)
+lasso_reg.score(test_X, test_y)
+lasso_reg.score(train_X, train_y)
+from sklearn.linear_model import Ridge
+ridge_reg= Ridge(alpha=50, max_iter=100, tol=0.1)
+ridge_reg.fit(train_X, train_y)
+ridge_reg.score(test_X, test_y)
+ridge_reg.score(train_X, train_y)
+
+Q.2. Write a python program to implement Decision Tree whether or not to play Tennis.
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+# Step 1: Create the dataset (if it's not loaded from CSV)
+data = {
+    'Outlook': ['Sunny', 'Sunny', 'Overcast', 'Rainy', 'Rainy', 'Rainy', 'Overcast', 'Sunny', 'Sunny', 'Rainy', 'Sunny', 'Overcast', 'Overcast', 'Rainy'],
+    'Temperature': ['Hot', 'Hot', 'Hot', 'Mild', 'Mild', 'Mild', 'Mild', 'Mild', 'Hot', 'Mild', 'Mild', 'Hot', 'Mild', 'Mild'],
+    'Humidity': ['High', 'High', 'High', 'High', 'Normal', 'Normal', 'Normal', 'Normal', 'High', 'Normal', 'Normal', 'High', 'Normal', 'High'],
+    'Windy': ['False', 'True', 'False', 'False', 'False', 'True', 'True', 'False', 'False', 'False', 'True', 'True', 'False', 'False'],
+    'PlayTennis': ['No', 'No', 'Yes', 'Yes', 'Yes', 'No', 'Yes', 'Yes', 'No', 'Yes', 'Yes', 'Yes', 'Yes', 'No']
+}
+# Step 2: Convert the data to a DataFrame
+df = pd.DataFrame(data)
+# Step 3: Preview the dataset
+print("\nDataset Preview:")
+print(df.head())
+# Step 4: Encode categorical variables to numeric values using LabelEncoder
+from sklearn.preprocessing import LabelEncoder
+label_encoder = LabelEncoder()
+# Encode the categorical columns
+df['Outlook'] = label_encoder.fit_transform(df['Outlook'])
+df['Temperature'] = label_encoder.fit_transform(df['Temperature'])
+df['Humidity'] = label_encoder.fit_transform(df['Humidity'])
+df['Windy'] = label_encoder.fit_transform(df['Windy'])
+df['PlayTennis'] = label_encoder.fit_transform(df['PlayTennis'])
+# Step 5: Split the dataset into features (X) and target (y)
+X = df.drop('PlayTennis', axis=1)  # Features (independent variables)
+y = df['PlayTennis']  # Target variable (dependent variable)
+# Step 6: Split the dataset into training and testing sets (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Step 7: Initialize the Decision Tree model
+dt_model = DecisionTreeClassifier(random_state=42)
+# Step 8: Train the model
+dt_model.fit(X_train, y_train)
+# Step 9: Make predictions on the test set
+y_pred = dt_model.predict(X_test)
+# Step 10: Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred)
+# Step 11: Print the results
+print(f"\nAccuracy: {accuracy}")
+print("\nConfusion Matrix:")
+print(conf_matrix)
+print("\nClassification Report:")
+print(class_report)
+# Displaying actual vs predicted values
+print("\nActual vs Predicted values:")
+for i in range(len(y_test)):
+    print(f"Actual: {y_test.iloc[i]}, Predicted: {y_pred[i]}")
